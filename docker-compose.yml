@@ -1,0 +1,40 @@
+version: "3"
+services:
+  pg_master:
+    build: ./containers/db_master
+    ports:
+      - "5462:5432"
+    volumes:
+      - pg_master:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=m_db_p
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=m_db_p
+      - PG_REP_USER=rep
+      - PG_REP_PASSWORD=123456
+    networks:
+      default:
+        aliases:
+          - pg_cluster
+  pg_replica:
+    build: ./containers/db_replica
+    ports:
+      - "5463:5432"
+    volumes:
+      - pg_slave:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=m_db_p
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=m_db_p
+      - PG_REP_USER=rep
+      - PG_REP_PASSWORD=123456
+    networks:
+      default:
+        aliases:
+          - pg_cluster
+
+volumes:
+  pg_master:
+    driver: local
+  pg_slave:
+    driver: local
